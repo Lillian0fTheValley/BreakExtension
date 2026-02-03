@@ -1,0 +1,88 @@
+{
+  "name": "break",
+  "displayName": "break",
+  "description": "take a break!",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.108.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "break.takeABreak",
+        "title": "takeABreak"
+      }
+    ]
+    ,
+    "configuration": {
+      "title": "Break: Reminders",
+      "properties": {
+        "break.reminders.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable all reminders"
+        },
+        "break.reminders.showNotification": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications for reminders"
+        },
+        "break.reminders.water.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable water break reminders"
+        },
+        "break.reminders.water.intervalMinutes": {
+          "type": "number",
+          "default": 60,
+          "minimum": 1,
+          "description": "Interval in minutes between water reminders"
+        },
+        "break.reminders.water.message": {
+          "type": "string",
+          "default": "Time for a water break!",
+          "description": "Message shown for water reminders"
+        },
+        "break.reminders.eye.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable eye break reminders"
+        },
+        "break.reminders.eye.intervalMinutes": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "description": "Interval in minutes between eye reminders"
+        },
+        "break.reminders.eye.message": {
+          "type": "string",
+          "default": "Time for an eye break! Look away for 20 seconds.",
+          "description": "Message shown for eye reminders"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.108.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.52.0",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
