@@ -140,7 +140,7 @@ class BreakReminderConfig:
         
         # Control Buttons
         button_frame = tk.Frame(main_frame, bg='#f0f0f0')
-        button_frame.pack(fill='x', pady=15)
+        button_frame.pack(fill='x', pady=8)
         
         self.start_button = tk.Button(
             button_frame,
@@ -371,4 +371,5 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
+
     main()
