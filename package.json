@@ -16,6 +16,10 @@
       {
         "command": "break.takeABreak",
         "title": "takeABreak"
+      },
+      {
+        "command": "break.launchPythonGUI",
+        "title": "Launch Break Reminder GUI"
       }
     ]
     ,
@@ -63,6 +67,11 @@
           "type": "string",
           "default": "Time for an eye break! Look away for 20 seconds.",
           "description": "Message shown for eye reminders"
+        },
+        "break.reminders.notifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable desktop notifications for breaks"
         }
       }
     }

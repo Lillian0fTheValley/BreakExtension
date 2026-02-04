@@ -60,6 +60,46 @@ function configureReminders() {
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "break" is now active!');
 
+	// Command to launch the Python GUI with current settings
+	const launchPythonCommand = vscode.commands.registerCommand('break.launchPythonGUI', () => {
+		const config = vscode.workspace.getConfiguration('break');
+		
+		// Prepare configuration for Python script
+		const configData = {
+			interval: config.get<number>('reminders.water.intervalMinutes', 60),
+			break_duration: 5,
+			break_types: {
+				water: config.get<boolean>('reminders.water.enabled', true),
+				eye_strain: config.get<boolean>('reminders.eye.enabled', true),
+				stretch: true,
+				walk: false
+			},
+			notifications_enabled: config.get<boolean>('reminders.showNotification', true)
+		};
+
+		const configJson = JSON.stringify(configData);
+		const pythonScriptPath = path.join(context.extensionPath, 'Hackathon project.py');
+		
+		// Spawn Python process with configuration
+		const pythonProcess: ChildProcessWithoutNullStreams = spawn('python', [
+			pythonScriptPath,
+			'--config', configJson
+		]);
+
+		pythonProcess.stdout.on('data', (data) => {
+			console.log(`[Python] ${data}`);
+		});
+
+		pythonProcess.stderr.on('data', (data) => {
+			console.error(`[Python Error] ${data}`);
+		});
+
+		pythonProcess.on('close', (code) => {
+			console.log(`Python process exited with code ${code}`);
+		});
+	});
+	context.subscriptions.push(launchPythonCommand);
+
 	// existing listeners
 	const textChangeDisposable = vscode.workspace.onDidChangeTextDocument((e) => {
 		const uri = e.document.uri;

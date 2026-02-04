@@ -7,26 +7,36 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 import threading
+import json
+import sys
+import argparse
 
 class BreakReminderConfig:
     """Configuration window for break reminder settings"""
     
-    def __init__(self, root):
+    def __init__(self, root, config_data=None):
         self.root = root
         self.root.title("Break Reminder Configuration")
         self.root.geometry("450x500")
         self.root.configure(bg='#f0f0f0')
         
+        # Use provided config or defaults
+        if config_data is None:
+            config_data = {}
+        
         # Default configuration
-        self.interval = tk.IntVar(value=30)
-        self.break_duration = tk.IntVar(value=5)
+        self.interval = tk.IntVar(value=config_data.get('interval', 30))
+        self.break_duration = tk.IntVar(value=config_data.get('break_duration', 5))
+        
+        # Load break types from config or defaults
+        break_types_config = config_data.get('break_types', {})
         self.break_types = {
-            'eye_strain': tk.BooleanVar(value=True),
-            'water': tk.BooleanVar(value=True),
-            'stretch': tk.BooleanVar(value=True),
-            'walk': tk.BooleanVar(value=False)
+            'eye_strain': tk.BooleanVar(value=break_types_config.get('eye_strain', False)),
+            'water': tk.BooleanVar(value=break_types_config.get('water', True)),
+            'stretch': tk.BooleanVar(value=break_types_config.get('stretch', True)),
+            'walk': tk.BooleanVar(value=break_types_config.get('walk', False))
         }
-        self.notifications_enabled = tk.BooleanVar(value=True)
+        self.notifications_enabled = tk.BooleanVar(value=config_data.get('notifications_enabled', True))
         
         self.is_running = False
         self.reminder_thread = None
@@ -365,11 +375,46 @@ class BreakReminderConfig:
         self.stop_button.config(state='disabled')
         self.status_label.config(text="Status: Stopped")
 
+def parse_config_from_args():
+    """Parse configuration from command-line arguments"""
+    parser = argparse.ArgumentParser(description='Break Reminder Application')
+    parser.add_argument('--config', type=str, help='JSON configuration string or file path')
+    parser.add_argument('--interval', type=int, help='Reminder interval in minutes')
+    parser.add_argument('--break-duration', type=int, help='Break duration in minutes')
+    parser.add_argument('--enable-notifications', type=bool, help='Enable notifications')
+    
+    args = parser.parse_args()
+    
+    config_data = {}
+    
+    # Load from JSON config if provided
+    if args.config:
+        try:
+            # Try to parse as JSON string first
+            config_data = json.loads(args.config)
+        except json.JSONDecodeError:
+            # Try to read as file
+            try:
+                with open(args.config, 'r') as f:
+                    config_data = json.load(f)
+            except Exception as e:
+                print(f"Warning: Could not load config from {args.config}: {e}")
+    
+    # Override with command-line arguments if provided
+    if args.interval:
+        config_data['interval'] = args.interval
+    if args.break_duration:
+        config_data['break_duration'] = args.break_duration
+    if args.enable_notifications is not None:
+        config_data['notifications_enabled'] = args.enable_notifications
+    
+    return config_data
+
 def main():
+    config = parse_config_from_args()
     root = tk.Tk()
-    app = BreakReminderConfig(root)
+    app = BreakReminderConfig(root, config)
     root.mainloop()
 
 if __name__ == "__main__":
-
     main()
