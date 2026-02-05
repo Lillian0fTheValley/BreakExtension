@@ -36,6 +36,11 @@
           "default": true,
           "description": "Enable eye break reminders"
         },
+        "break.reminders.stretch.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable stretch break reminders"
+        },
         "break.reminders.walk.enabled": {
           "type": "boolean",
           "default": true,

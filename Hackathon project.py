@@ -24,17 +24,26 @@ class BreakReminderConfig:
         if config_data is None:
             config_data = {}
         
+        # Ensure config_data is a dictionary
+        if not isinstance(config_data, dict):
+            print(f"Warning: config_data is not a dict, got {type(config_data)}", file=sys.stderr)
+            config_data = {}
+        
         # Default configuration
         self.interval = tk.IntVar(value=config_data.get('interval', 30))
         self.break_duration = tk.IntVar(value=config_data.get('break_duration', 5))
         
         # Load break types from config or defaults
         break_types_config = config_data.get('break_types', {})
+        if not isinstance(break_types_config, dict):
+            print(f"Warning: break_types_config is not a dict, got {type(break_types_config)}", file=sys.stderr)
+            break_types_config = {}
+        
         self.break_types = {
             'eye_strain': tk.BooleanVar(value=break_types_config.get('eye_strain', False)),
             'water': tk.BooleanVar(value=break_types_config.get('water', True)),
             'stretch': tk.BooleanVar(value=break_types_config.get('stretch', True)),
-            'walk': tk.BooleanVar(value=break_types_config.get('walk', False))
+            'walk': tk.BooleanVar(value=break_types_config.get('walk', True))
         }
         self.notifications_enabled = tk.BooleanVar(value=config_data.get('notifications_enabled', True))
         
@@ -381,7 +390,7 @@ def parse_config_from_args():
     parser.add_argument('--config', type=str, help='JSON configuration string or file path')
     parser.add_argument('--interval', type=int, help='Reminder interval in minutes')
     parser.add_argument('--break-duration', type=int, help='Break duration in minutes')
-    parser.add_argument('--enable-notifications', type=bool, help='Enable notifications')
+    parser.add_argument('--enable-notifications', action='store_true', help='Enable notifications')
     
     args = parser.parse_args()
     
@@ -391,30 +400,43 @@ def parse_config_from_args():
     if args.config:
         try:
             # Try to parse as JSON string first
+            print(f"Attempting to parse config JSON: {args.config[:100]}...", file=sys.stderr)
             config_data = json.loads(args.config)
-        except json.JSONDecodeError:
+            print(f"Successfully loaded config: {config_data}", file=sys.stderr)
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse JSON: {e}", file=sys.stderr)
             # Try to read as file
             try:
+                print(f"Attempting to read config file: {args.config}", file=sys.stderr)
                 with open(args.config, 'r') as f:
                     config_data = json.load(f)
+                print(f"Successfully loaded config from file: {config_data}", file=sys.stderr)
             except Exception as e:
-                print(f"Warning: Could not load config from {args.config}: {e}")
+                print(f"Warning: Could not load config from {args.config}: {e}", file=sys.stderr)
+        except Exception as e:
+            print(f"Unexpected error parsing config: {e}", file=sys.stderr)
     
     # Override with command-line arguments if provided
     if args.interval:
         config_data['interval'] = args.interval
     if args.break_duration:
         config_data['break_duration'] = args.break_duration
-    if args.enable_notifications is not None:
-        config_data['notifications_enabled'] = args.enable_notifications
+    if args.enable_notifications:
+        config_data['notifications_enabled'] = True
     
     return config_data
 
 def main():
-    config = parse_config_from_args()
-    root = tk.Tk()
-    app = BreakReminderConfig(root, config)
-    root.mainloop()
+    try:
+        config = parse_config_from_args()
+        root = tk.Tk()
+        app = BreakReminderConfig(root, config)
+        root.mainloop()
+    except Exception as e:
+        print(f"Fatal error: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

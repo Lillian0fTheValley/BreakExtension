@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
 				water: config.get<boolean>('reminders.water.enabled', true),
 				eye_strain: config.get<boolean>('reminders.eye.enabled', true),
 				stretch: config.get<boolean>('reminders.stretch.enabled', true),
-				walk: config.get<boolean>('reminders.walk', true)
+				walk: config.get<boolean>('reminders.walk.enabled', true)
 			},
 			notifications_enabled: config.get<boolean>('reminders.showNotification', true)
 		};
