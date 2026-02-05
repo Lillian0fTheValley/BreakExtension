@@ -1,0 +1,24 @@
+{
+    "setup": {
+        "Set work time: ": 5,
+        "Set break time: ": 3
+    },
+    "session responses": [
+        {
+            "prompt": "Take Break",
+            "Ans": "y"
+        },
+        {
+            "prompt": "Restart cycle",
+            "Ans": "y"
+        },
+        {
+            "prompt": "Take Break",
+            "Ans": "y"
+        },
+        {
+            "prompt": "Restart cycle",
+            "Ans": "n"
+        }
+    ]
+}
